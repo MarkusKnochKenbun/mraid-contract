@@ -1,5 +1,6 @@
 package de.kenbun.contract_library
 
+import android.database.Cursor
 import android.database.MatrixCursor
 
 data class TranscriptionMessage(
@@ -23,7 +24,7 @@ data class TranscriptionMessage(
 
     val PROJECTION = arrayOf(COLUMN_SESSION_ID, COLUMN_TEXT, COLUMN_TIMESTAMP)
 
-    fun fromMatrixCursor(cursor: MatrixCursor): TranscriptionMessage {
+    fun fromMatrixCursor(cursor: Cursor): TranscriptionMessage {
       // Move to the first row to read the data
       if (!cursor.moveToFirst()) {
         throw IllegalArgumentException("Cursor must contain at least one row.")
