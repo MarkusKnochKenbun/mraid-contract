@@ -13,7 +13,7 @@ data class ServerMessage(
 
     fun toBundle(): Bundle {
         return Bundle().apply {
-            putParcelable(KEY, this)
+            putParcelable(KEY, this@ServerMessage)
         }
     }
 
