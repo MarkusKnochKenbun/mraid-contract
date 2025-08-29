@@ -38,15 +38,11 @@ class DataContentResolver
     fun sendAndReceiveData(message: ServerMessage): ServerMessage? {
         Log.i("DataContentResolver", "sendAndReceiveData")
 
-        val requestBundle = Bundle().apply {
-            putParcelable(ServerMessage.KEY, message)
-        }
-
         val responseBundle = contentResolver.call(
             DATA_PROVIDER_AUTHORITY,
             ContentProviderMethod.SendAndReceiveData.name,
             null,
-            requestBundle
+            message.toBundle()
         )
 
         if (responseBundle == null) {
@@ -54,11 +50,7 @@ class DataContentResolver
             return null
         }
 
-        val serverResponse: ServerMessage? = if (isEqualOrHigher(Build.VERSION_CODES.TIRAMISU)) {
-            responseBundle.getParcelable(ServerMessage.KEY, ServerMessage::class.java)
-        } else {
-            responseBundle.getParcelable(ServerMessage.KEY)
-        }
+        val serverResponse = ServerMessage.fromBundle(responseBundle)
 
         Log.i("DataContentResolver", "serverResponse: $serverResponse")
 

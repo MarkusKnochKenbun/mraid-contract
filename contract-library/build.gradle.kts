@@ -54,7 +54,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "io.jitpack"
             artifactId = "library"
-            version = "2.1.0"
+            version = "2.2.0"
 
             afterEvaluate {
                 from(components["release"])
