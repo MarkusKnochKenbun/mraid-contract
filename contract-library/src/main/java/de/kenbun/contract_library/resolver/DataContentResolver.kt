@@ -3,7 +3,6 @@ package de.kenbun.contract_library.resolver
 import android.content.ContentResolver
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import de.kenbun.contract_library.DataContentProviderContract.DATA_PROVIDER_AUTHORITY
@@ -11,7 +10,6 @@ import de.kenbun.contract_library.DataContentProviderContract.REQUEST_SERVICE_ST
 import de.kenbun.contract_library.data.ContentProviderMethod
 import de.kenbun.contract_library.data.InferenceServiceStatus
 import de.kenbun.contract_library.data.ServerMessage
-import de.kenbun.contract_library.util.AndroidVersionUtil.isEqualOrHigher
 import javax.inject.Inject
 
 class DataContentResolver
