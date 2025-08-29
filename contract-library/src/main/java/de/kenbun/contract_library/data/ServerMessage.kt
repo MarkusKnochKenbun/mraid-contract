@@ -1,19 +1,18 @@
 package de.kenbun.contract_library.data
 
-import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
-import de.kenbun.contract_library.util.AndroidVersionUtil.isEqualOrHigher
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
-@Parcelize
+@Serializable
 data class ServerMessage(
     val number: Int, val text: String, val timeStamp: Long
-) : Parcelable {
+) {
 
     fun toBundle(): Bundle {
+        val jsonString = Json.encodeToString(this)
         return Bundle().apply {
-            putParcelable(KEY, this@ServerMessage)
+            putString(KEY, jsonString)
         }
     }
 
@@ -21,12 +20,12 @@ data class ServerMessage(
         const val KEY = "serverMessage"
 
         fun fromBundle(bundle: Bundle): ServerMessage? {
-            return if (isEqualOrHigher(Build.VERSION_CODES.TIRAMISU)) {
-                bundle.getParcelable(KEY, ServerMessage::class.java)
+            val jsonString = bundle.getString(KEY)
+            return if (jsonString != null) {
+                Json.decodeFromString<ServerMessage>(jsonString)
             } else {
-                bundle.getParcelable(KEY)
+                null
             }
         }
-
     }
 }

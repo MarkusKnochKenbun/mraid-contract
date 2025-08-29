@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinAndroidKsp)
     alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.kotlin.serialization)
     id("maven-publish")
-    id("kotlin-parcelize")
 }
 
 android {
@@ -38,6 +38,8 @@ android {
 
 dependencies {
 
+    implementation(libs.kotlinx.serialization.json)
+
     // hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
@@ -54,7 +56,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "io.jitpack"
             artifactId = "library"
-            version = "2.3.0"
+            version = "2.4.0"
 
             afterEvaluate {
                 from(components["release"])
