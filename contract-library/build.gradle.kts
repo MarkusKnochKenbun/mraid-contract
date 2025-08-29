@@ -35,11 +35,9 @@ android {
 
 dependencies {
 
-    implementation(libs.appcompat.v7)
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.runner)
-    androidTestImplementation(libs.espresso.core)
 }
 
 publishing {
