@@ -1,4 +1,4 @@
-package de.kenbun.contract_library
+package de.kenbun.contract_library.data
 
 import android.database.Cursor
 import android.database.MatrixCursor
@@ -21,7 +21,7 @@ enum class InferenceServiceStatus {
 
       val statusIndex = cursor.getColumnIndex(COLUMN_NAME)
       val statusString = cursor.getString(statusIndex)
-      return InferenceServiceStatus.valueOf(statusString)
+      return valueOf(statusString)
     }
   }
 

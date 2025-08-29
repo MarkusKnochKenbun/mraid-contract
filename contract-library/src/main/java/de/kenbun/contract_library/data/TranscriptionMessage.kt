@@ -1,4 +1,4 @@
-package de.kenbun.contract_library
+package de.kenbun.contract_library.data
 
 import android.database.Cursor
 import android.database.MatrixCursor

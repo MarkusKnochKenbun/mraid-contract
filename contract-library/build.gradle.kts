@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinAndroidKsp)
+    alias(libs.plugins.hiltAndroid)
     id("maven-publish")
 }
 
@@ -34,6 +36,12 @@ android {
 }
 
 dependencies {
+
+    // hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
