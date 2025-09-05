@@ -1,13 +1,17 @@
 package de.kenbun.contract_library.intent
 
 import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import de.kenbun.contract_library.MRAIDBroadcastReceiverContract.MRAID_BROADCAST_STOP
 import de.kenbun.contract_library.PackageContract.MRAID_PACKAGE_NAME
 import de.kenbun.contract_library.PackageContract.PERMISSION_ACTIVITY_CLASS_NAME
@@ -16,7 +20,12 @@ import javax.inject.Inject
 
 class IntentManager @Inject constructor(private val context: Context) {
 
-    fun startActivityOnResult(resultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+    val resultLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            manageLauncherResult(result)
+        }
+
+    fun startActivityOnResult() {
 
         val targetComponent = ComponentName(
             MRAID_PACKAGE_NAME, PERMISSION_ACTIVITY_CLASS_NAME
