@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlinAndroidKsp)
-    alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.kotlin.serialization)
     id("maven-publish")
 }
@@ -39,11 +37,6 @@ android {
 dependencies {
 
     implementation(libs.kotlinx.serialization.json)
-
-    // hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.core.ktx)

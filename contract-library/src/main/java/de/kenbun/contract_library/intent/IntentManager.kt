@@ -1,6 +1,5 @@
 package de.kenbun.contract_library.intent
 
-import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.ComponentName
@@ -8,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,16 +14,15 @@ import de.kenbun.contract_library.MRAIDBroadcastReceiverContract.MRAID_BROADCAST
 import de.kenbun.contract_library.PackageContract.MRAID_PACKAGE_NAME
 import de.kenbun.contract_library.PackageContract.PERMISSION_ACTIVITY_CLASS_NAME
 import de.kenbun.contract_library.PackageContract.RESULT_STRING_EXTRA_KEY
-import javax.inject.Inject
 
-class IntentManager @Inject constructor(private val context: Context) {
-
-    val resultLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            manageLauncherResult(result)
-        }
+class IntentManager(private val context: Context) {
 
     fun startActivityOnResult() {
+
+        val resultLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                manageLauncherResult(result)
+            }
 
         val targetComponent = ComponentName(
             MRAID_PACKAGE_NAME, PERMISSION_ACTIVITY_CLASS_NAME
@@ -48,13 +45,13 @@ class IntentManager @Inject constructor(private val context: Context) {
 
         when (result.resultCode) {
 
-            Activity.RESULT_OK -> {
+            RESULT_OK -> {
                 val response = result.data?.getStringExtra(RESULT_STRING_EXTRA_KEY)
                 Log.d("IntentManager", "manageLauncherResult: $response")
                 Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show()
             }
 
-            Activity.RESULT_CANCELED -> {
+            RESULT_CANCELED -> {
                 Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
             }
 

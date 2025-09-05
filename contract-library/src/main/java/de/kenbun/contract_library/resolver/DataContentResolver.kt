@@ -10,10 +10,8 @@ import de.kenbun.contract_library.DataContentProviderContract.REQUEST_SERVICE_ST
 import de.kenbun.contract_library.data.ContentProviderMethod
 import de.kenbun.contract_library.data.InferenceServiceStatus
 import de.kenbun.contract_library.data.ServerMessage
-import javax.inject.Inject
 
-class DataContentResolver
-@Inject constructor(private val contentResolver: ContentResolver) {
+class DataContentResolver(private val contentResolver: ContentResolver) {
 
     fun requestServiceStatus(): InferenceServiceStatus? {
 

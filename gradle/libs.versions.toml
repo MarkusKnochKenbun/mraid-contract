@@ -8,10 +8,6 @@ activityCompose = "1.10.1"
 
 kotlinxSerialization = "1.9.0"
 
-# hilt
-kspVersion = "2.2.10-2.0.2"
-hiltVersion = "2.57.1"
-
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,9 +16,6 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
-# hilt
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -30,6 +23,3 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin_serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-# hilt
-hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref ="hiltVersion" }
-kotlinAndroidKsp = { id = "com.google.devtools.ksp", version.ref ="kspVersion" }
