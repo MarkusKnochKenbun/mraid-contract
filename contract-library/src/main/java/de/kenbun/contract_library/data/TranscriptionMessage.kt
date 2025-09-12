@@ -2,18 +2,29 @@ package de.kenbun.contract_library.data
 
 import android.database.Cursor
 import android.database.MatrixCursor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
+@Serializable
 data class TranscriptionMessage(
     val sessionId: String,
     val text: String,
     val timestamp: Long,
 ) {
 
-  fun toMatrixCursor(): MatrixCursor {
-    val cursor = MatrixCursor(PROJECTION)
+  fun toJsonString(): String {
+    return Json.encodeToString(this)
+  }
 
+  fun toMatrixCursorWithFields(): MatrixCursor {
+    val cursor = MatrixCursor(PROJECTION_FIELDS)
     cursor.addRow(arrayOf<Any>(this.sessionId, this.text, this.timestamp))
+    return cursor
+  }
 
+  fun toMatrixCursorWithJson(): MatrixCursor {
+    val cursor = MatrixCursor(PROJECTION_JSON)
+    cursor.addRow(arrayOf<Any>(this.toJsonString()))
     return cursor
   }
 
@@ -22,7 +33,7 @@ data class TranscriptionMessage(
     const val COLUMN_TEXT = "text"
     const val COLUMN_TIMESTAMP = "timestamp"
 
-    val PROJECTION = arrayOf(COLUMN_SESSION_ID, COLUMN_TEXT, COLUMN_TIMESTAMP)
+    val PROJECTION_FIELDS = arrayOf(COLUMN_SESSION_ID, COLUMN_TEXT, COLUMN_TIMESTAMP)
 
     fun fromMatrixCursor(cursor: Cursor): TranscriptionMessage {
       // Move to the first row to read the data
@@ -39,6 +50,22 @@ data class TranscriptionMessage(
       val timestamp = cursor.getLong(timestampIndex)
 
       return TranscriptionMessage(sessionId, text, timestamp)
+    }
+
+    const val COLUMN_JSON_DATA = "jsonData"
+    val PROJECTION_JSON = arrayOf(COLUMN_JSON_DATA)
+
+    fun fromMatrixCursorAsJsonString(cursor: Cursor): String {
+      if (!cursor.moveToFirst()) {
+        throw IllegalArgumentException("Cursor must contain at least one row for JSON extraction.")
+      }
+      val jsonIndex = cursor.getColumnIndexOrThrow(COLUMN_JSON_DATA)
+      val jsonString = cursor.getString(jsonIndex)
+      return jsonString
+    }
+
+    fun fromJsonString(jsonString: String): TranscriptionMessage {
+      return Json.decodeFromString(jsonString)
     }
   }
 }

@@ -23,6 +23,16 @@ enum class InferenceServiceStatus {
       val statusString = cursor.getString(statusIndex)
       return valueOf(statusString)
     }
+
+    fun fromMatrixCursorAsString(cursor: Cursor): String {
+
+      if (!cursor.moveToFirst()) {
+        throw IllegalArgumentException("Cursor must contain at least one row.")
+      }
+
+      val statusIndex = cursor.getColumnIndex(COLUMN_NAME)
+      return cursor.getString(statusIndex)
+    }
   }
 
   fun toMatrixCursor(): MatrixCursor {

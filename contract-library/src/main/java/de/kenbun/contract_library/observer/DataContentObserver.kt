@@ -13,20 +13,32 @@ import de.kenbun.contract_library.DataContentProviderContract.CURRENT_TRANSCRIPT
 import de.kenbun.contract_library.DataContentProviderContract.DATA_PROVIDER_AUTHORITY
 import de.kenbun.contract_library.DataContentProviderContract.REQUEST_SERVICE_STATUS_CODE
 import de.kenbun.contract_library.DataContentProviderContract.REQUEST_SERVICE_STATUS_PATH
+import de.kenbun.contract_library.PackageContract.MRAID_PACKAGE_NAME
 import de.kenbun.contract_library.data.InferenceServiceStatus
 import de.kenbun.contract_library.data.TranscriptionMessage
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import de.kenbun.contract_library.util.PackageUtil.isPackageInstalled
 
-class DataContentObserver(private val context: Context, handler: Handler) :
-    ContentObserver(handler) {
+class DataContentObserver(
+    private val context: Context,
+    handler: Handler
+) : ContentObserver(handler) {
 
-    private val _transcription = MutableStateFlow<TranscriptionMessage?>(null)
-    val transcription = _transcription.asStateFlow()
+    private var onNewTranscriptionMessage: ((String) -> Unit)? = null
+    private var onNewStatus: ((String) -> Unit)? = null
 
-    private val _inferenceServiceStatus =
-        MutableStateFlow(InferenceServiceStatus.UNSET)
-    val inferenceServiceStatus = _inferenceServiceStatus.asStateFlow()
+    fun setTranscriptionCallback(callback: (String) -> Unit) {
+        this.onNewTranscriptionMessage = callback
+    }
+
+    fun setStatusCallback(callback: (String) -> Unit) {
+        this.onNewStatus = callback
+    }
+
+
+    fun clearAllCallbacks() {
+        this.onNewTranscriptionMessage = null
+        this.onNewStatus = null
+    }
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
@@ -47,17 +59,54 @@ class DataContentObserver(private val context: Context, handler: Handler) :
     }
 
     private fun fetchCurrentTranscription() {
-        context.contentResolver.query(CONTENT_URI_CURRENT_TRANSCRIPTION, null, null, null, null)
-            ?.use { cursor ->
-                _transcription.value = TranscriptionMessage.fromMatrixCursor(cursor)
-            }
+        onNewTranscriptionMessage?.let { callback ->
+            context.contentResolver.query(CONTENT_URI_CURRENT_TRANSCRIPTION, null, null, null, null)
+                ?.use { cursor ->
+                    try {
+                        callback(TranscriptionMessage.fromMatrixCursorAsJsonString(cursor))
+                    } catch (e: Exception) {
+                        Log.e("DataContentObserver", "Error processing transcription message", e)
+                    }
+                }
+        } ?: Log.w("DataContentObserver", "Transcription callback not set, skipping fetch.")
     }
 
     private fun requestServiceStatus() {
-        context.contentResolver.query(CONTENT_URI_SERVICE_STATUS, null, null, null, null)
-            ?.use { cursor ->
-                _inferenceServiceStatus.value = InferenceServiceStatus.fromMatrixCursor(cursor)
-            }
+        onNewStatus?.let { callback ->
+            context.contentResolver.query(CONTENT_URI_SERVICE_STATUS, null, null, null, null)
+                ?.use { cursor ->
+                    try {
+                        // Same here, callback is a Function1 for Java.
+                        callback(InferenceServiceStatus.fromMatrixCursorAsString(cursor))
+                    } catch (e: Exception) {
+                        Log.e("DataContentObserver", "Error processing service status", e)
+                    }
+                }
+        } ?: Log.w("DataContentObserver", "Status callback not set, skipping request.")
+    }
+
+    fun register(): Boolean {
+
+        if (!isPackageInstalled(
+                MRAID_PACKAGE_NAME, context.packageManager
+            )
+        ) {
+            return false
+        } else {
+            context.contentResolver.registerContentObserver(
+                CONTENT_URI_CURRENT_TRANSCRIPTION, true, this
+            )
+
+            context.contentResolver.registerContentObserver(
+                CONTENT_URI_SERVICE_STATUS, true, this
+            )
+        }
+        return true
+    }
+
+    fun unregister() {
+        clearAllCallbacks()
+        context.contentResolver.unregisterContentObserver(this)
     }
 
     companion object {
