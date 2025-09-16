@@ -6,13 +6,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import de.kenbun.contract_library.PackageContract.MRAID_PACKAGE_NAME
 import de.kenbun.contract_library.PackageContract.PERMISSION_ACTIVITY_CLASS_NAME
 import de.kenbun.contract_library.PackageContract.RESULT_STRING_EXTRA_KEY
 
-class MraidActivityContract(private val context: Context) : ActivityResultContract<Int, String?>() {
+class MraidActivityContract() : ActivityResultContract<Int, String?>() {
 
     override fun createIntent(context: Context, input: Int): Intent {
 
@@ -27,24 +26,25 @@ class MraidActivityContract(private val context: Context) : ActivityResultContra
         return intent
     }
 
+
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
 
         when (resultCode) {
 
             RESULT_OK -> {
                 val response = intent?.getStringExtra(RESULT_STRING_EXTRA_KEY)
-                Log.d("IntentManager", "manageLauncherResult: $response")
+                Log.d("MraidActivityContract", "RESULT_OK: response: $response")
 
-                return response
+                return RESULT_OK.toString()
             }
 
             RESULT_CANCELED -> {
-                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
-                return null
+                Log.d("MraidActivityContract", "RESULT_CANCELED")
+                return RESULT_CANCELED.toString()
             }
 
             else -> {
-                Toast.makeText(context, "Unknown result", Toast.LENGTH_SHORT).show()
+                Log.d("MraidActivityContract", "No matching resultCode!")
                 return null
             }
         }

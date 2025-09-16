@@ -3,41 +3,32 @@ package de.kenbun.contract_library.data
 import android.database.Cursor
 import android.database.MatrixCursor
 
-enum class InferenceServiceStatus {
-  TRANSCRIBING,
-  STOPPED,
-  UNSET,
-  STARTING,
-  STOPPING;
+enum class InferenceServiceStatus(val code: Int) {
+    UNSET(0), TRANSCRIBING(1), STOPPED(2), STARTING(3), STOPPING(4);
 
-  companion object {
-    private const val COLUMN_NAME = "status"
-
-    fun fromMatrixCursor(cursor: Cursor): InferenceServiceStatus {
-
-      if (!cursor.moveToFirst()) {
-        throw IllegalArgumentException("Cursor must contain at least one row.")
-      }
-
-      val statusIndex = cursor.getColumnIndex(COLUMN_NAME)
-      val statusString = cursor.getString(statusIndex)
-      return valueOf(statusString)
+    fun codeToMatrixCursor(): MatrixCursor {
+        val matrixCursor = MatrixCursor(arrayOf(STATUS_CODE_COLUMN_NAME))
+        matrixCursor.addRow(arrayOf(this.code))
+        return matrixCursor
     }
 
-    fun fromMatrixCursorAsString(cursor: Cursor): String {
+    companion object {
+        private const val STATUS_CODE_COLUMN_NAME = "statusCode"
 
-      if (!cursor.moveToFirst()) {
-        throw IllegalArgumentException("Cursor must contain at least one row.")
-      }
+        private val map = entries.associateBy(InferenceServiceStatus::code)
 
-      val statusIndex = cursor.getColumnIndex(COLUMN_NAME)
-      return cursor.getString(statusIndex)
+        fun fromCode(code: Int): InferenceServiceStatus? = map[code]
+
+        fun codeFromCursor(cursor: Cursor): Int {
+
+            if (!cursor.moveToFirst()) {
+                throw IllegalArgumentException("Cursor must contain at least one row.")
+            }
+
+            val statusCodeColumnIndex = cursor.getColumnIndexOrThrow(STATUS_CODE_COLUMN_NAME)
+
+            val statusCode = cursor.getInt(statusCodeColumnIndex)
+            return statusCode
+        }
     }
-  }
-
-  fun toMatrixCursor(): MatrixCursor {
-    val matrixCursor = MatrixCursor(arrayOf(COLUMN_NAME))
-    matrixCursor.addRow(arrayOf(this.name))
-    return matrixCursor
-  }
 }

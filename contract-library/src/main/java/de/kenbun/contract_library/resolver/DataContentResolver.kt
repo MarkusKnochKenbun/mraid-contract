@@ -13,7 +13,7 @@ import de.kenbun.contract_library.data.ServerMessage
 
 class DataContentResolver(private val contentResolver: ContentResolver) {
 
-    fun requestServiceStatus(): InferenceServiceStatus? {
+    fun requestServiceStatus(): Int? {
 
         Log.i("DataContentResolver", "requestServiceStatus")
 
@@ -22,7 +22,7 @@ class DataContentResolver(private val contentResolver: ContentResolver) {
 
         return contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
-                InferenceServiceStatus.fromMatrixCursor(cursor)
+                InferenceServiceStatus.codeFromCursor(cursor)
             } else {
                 null
             }
@@ -31,14 +31,14 @@ class DataContentResolver(private val contentResolver: ContentResolver) {
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun sendAndReceiveData(message: ServerMessage): ServerMessage? {
+    fun sendAndReceiveData(message: String): String? {
         Log.i("DataContentResolver", "sendAndReceiveData")
 
         val responseBundle = contentResolver.call(
             DATA_PROVIDER_AUTHORITY,
             ContentProviderMethod.SendAndReceiveData.name,
             null,
-            message.toBundle()
+            ServerMessage.toBundleFromJsonString(message)
         )
 
         if (responseBundle == null) {
@@ -46,11 +46,11 @@ class DataContentResolver(private val contentResolver: ContentResolver) {
             return null
         }
 
-        val serverResponse = ServerMessage.fromBundle(responseBundle)
+        val jsonStringServerResponse = ServerMessage.jsonStringFromBundle(responseBundle)
 
-        Log.i("DataContentResolver", "serverResponse: $serverResponse")
+        Log.i("DataContentResolver", "jsonStringServerResponse: $jsonStringServerResponse")
 
-        return serverResponse
+        return jsonStringServerResponse
     }
 
 

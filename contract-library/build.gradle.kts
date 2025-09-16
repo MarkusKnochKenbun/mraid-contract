@@ -36,8 +36,8 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
@@ -49,7 +49,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "io.jitpack"
             artifactId = "library"
-            version = "2.5.0"
+            version = "2.6.0"
 
             afterEvaluate {
                 from(components["release"])

@@ -23,14 +23,14 @@ class DataContentObserver(
     handler: Handler
 ) : ContentObserver(handler) {
 
-    private var onNewTranscriptionMessage: ((String) -> Unit)? = null
-    private var onNewStatus: ((String) -> Unit)? = null
+    private var onNewTranscriptionMessage: ((String?) -> Unit)? = null
+    private var onNewStatus: ((Int) -> Unit)? = null
 
-    fun setTranscriptionCallback(callback: (String) -> Unit) {
+    fun setTranscriptionCallback(callback: (String?) -> Unit) {
         this.onNewTranscriptionMessage = callback
     }
 
-    fun setStatusCallback(callback: (String) -> Unit) {
+    fun setStatusCallback(callback: (Int) -> Unit) {
         this.onNewStatus = callback
     }
 
@@ -63,7 +63,7 @@ class DataContentObserver(
             context.contentResolver.query(CONTENT_URI_CURRENT_TRANSCRIPTION, null, null, null, null)
                 ?.use { cursor ->
                     try {
-                        callback(TranscriptionMessage.fromMatrixCursorAsJsonString(cursor))
+                        callback(TranscriptionMessage.jsonStringFromMatrixCursor(cursor))
                     } catch (e: Exception) {
                         Log.e("DataContentObserver", "Error processing transcription message", e)
                     }
@@ -77,7 +77,7 @@ class DataContentObserver(
                 ?.use { cursor ->
                     try {
                         // Same here, callback is a Function1 for Java.
-                        callback(InferenceServiceStatus.fromMatrixCursorAsString(cursor))
+                        callback(InferenceServiceStatus.codeFromCursor(cursor))
                     } catch (e: Exception) {
                         Log.e("DataContentObserver", "Error processing service status", e)
                     }
